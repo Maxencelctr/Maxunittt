@@ -211,6 +211,11 @@ export default function ModifierProduit({ params }) {
           <label className="text-xs font-semibold text-[#8C7B6B] tracking-widest">DESCRIPTION</label>
           <textarea name="description" value={form.description || ''} onChange={handleChange} rows={4} className="w-full border border-[#E8DFD0] rounded-xl px-4 py-3 text-sm text-[#3D2B1F] bg-transparent mt-1 outline-none focus:border-[#3D2B1F] resize-none" />
         </div>
+        <div>
+          <label className="text-xs font-semibold text-[#8C7B6B] tracking-widest">SLUG (URL)</label>
+          <input name="slug" value={form.slug || ''} onChange={handleChange} className="w-full border border-[#E8DFD0] rounded-xl px-4 py-3 text-sm text-[#3D2B1F] bg-transparent mt-1 outline-none focus:border-[#3D2B1F]" />
+            <p className="text-xs text-[#8C7B6B] mt-1">Exemple : short-adidas-vintage</p>
+        </div>
 
         <div>
           <label className="text-xs font-semibold text-[#8C7B6B] tracking-widest">DISPONIBLE</label>
