@@ -19,6 +19,7 @@ function BoutiqueContenu() {
   const [prixMin, setPrixMin] = useState('')
   const [prixMax, setPrixMax] = useState('')
   const [filtreOuvert, setFiltreOuvert] = useState(null)
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 })
 
   const searchParams = useSearchParams()
 
@@ -79,11 +80,20 @@ function BoutiqueContenu() {
     const btnRef = useRef(null)
 
     const handleClick = () => {
-      setFiltreOuvert(filtreOuvert === label ? null : label)
+      if (filtreOuvert === label) {
+        setFiltreOuvert(null)
+      } else {
+        const rect = btnRef.current.getBoundingClientRect()
+        setDropdownPos({
+          top: rect.bottom + 4,
+          left: rect.left
+        })
+        setFiltreOuvert(label)
+      }
     }
 
     return (
-      <div style={{position: 'relative'}}>
+      <div>
         <button
           ref={btnRef}
           onClick={handleClick}
@@ -92,14 +102,6 @@ function BoutiqueContenu() {
           {label} {actifs > 0 && `(${actifs})`}
           <ChevronDown size={12} />
         </button>
-        {filtreOuvert === label && (
-          <div
-            className="bg-[#F5F0E8] border border-[#E8DFD0] rounded-2xl p-4 shadow-lg min-w-48 max-h-64 overflow-y-auto"
-            style={{position: 'fixed', top: btnRef.current ? btnRef.current.getBoundingClientRect().bottom + 4 : 0, left: btnRef.current ? btnRef.current.getBoundingClientRect().left : 0, zIndex: 9999}}
-          >
-            {children}
-          </div>
-        )}
       </div>
     )
   }
@@ -117,6 +119,26 @@ function BoutiqueContenu() {
       {c.nom}
     </label>
   ))
+
+  const contenuDropdown = {
+    'Marque': contenuMarques,
+    'Catégorie': contenuCategories,
+    'Taille': (
+      <div className="flex flex-wrap gap-2">
+        {tailles.map(t => (
+          <button key={t} onClick={() => toggleFiltre(t, taillesActives, setTaillesActives)} className={`text-xs px-3 py-1 rounded-full border transition-colors ${taillesActives.includes(t) ? 'bg-[#3D2B1F] text-white border-[#3D2B1F]' : 'border-[#E8DFD0] text-[#3D2B1F]'}`}>
+            {t}
+          </button>
+        ))}
+      </div>
+    ),
+    'Prix': (
+      <div className="flex flex-col gap-2">
+        <input type="number" placeholder="Min €" value={prixMin} onChange={e => setPrixMin(e.target.value)} className="w-full border border-[#E8DFD0] rounded-lg px-3 py-2 text-sm text-[#3D2B1F] bg-[#F5F0E8]" />
+        <input type="number" placeholder="Max €" value={prixMax} onChange={e => setPrixMax(e.target.value)} className="w-full border border-[#E8DFD0] rounded-lg px-3 py-2 text-sm text-[#3D2B1F] bg-[#F5F0E8]" />
+      </div>
+    )
+  }
 
   const panneauFiltresDesktop = (
     <div className="flex flex-col gap-6">
@@ -163,30 +185,10 @@ function BoutiqueContenu() {
       {/* Filtres mobile style Vinted */}
       <div className="md:hidden mb-4" style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
         <div style={{display: 'flex', gap: '8px', width: 'max-content', paddingBottom: '8px'}}>
-          <FiltreBtn label="Marque" actifs={marquesActives.length}>
-            {contenuMarques}
-          </FiltreBtn>
-
-          <FiltreBtn label="Catégorie" actifs={categoriesActives.length}>
-            {contenuCategories}
-          </FiltreBtn>
-
-          <FiltreBtn label="Taille" actifs={taillesActives.length}>
-            <div className="flex flex-wrap gap-2">
-              {tailles.map(t => (
-                <button key={t} onClick={() => toggleFiltre(t, taillesActives, setTaillesActives)} className={`text-xs px-3 py-1 rounded-full border transition-colors ${taillesActives.includes(t) ? 'bg-[#3D2B1F] text-white border-[#3D2B1F]' : 'border-[#E8DFD0] text-[#3D2B1F]'}`}>
-                  {t}
-                </button>
-              ))}
-            </div>
-          </FiltreBtn>
-
-          <FiltreBtn label="Prix" actifs={(prixMin || prixMax) ? 1 : 0}>
-            <div className="flex flex-col gap-2">
-              <input type="number" placeholder="Min €" value={prixMin} onChange={e => setPrixMin(e.target.value)} className="w-full border border-[#E8DFD0] rounded-lg px-3 py-2 text-sm text-[#3D2B1F] bg-transparent" />
-              <input type="number" placeholder="Max €" value={prixMax} onChange={e => setPrixMax(e.target.value)} className="w-full border border-[#E8DFD0] rounded-lg px-3 py-2 text-sm text-[#3D2B1F] bg-transparent" />
-            </div>
-          </FiltreBtn>
+          <FiltreBtn label="Marque" actifs={marquesActives.length} />
+          <FiltreBtn label="Catégorie" actifs={categoriesActives.length} />
+          <FiltreBtn label="Taille" actifs={taillesActives.length} />
+          <FiltreBtn label="Prix" actifs={(prixMin || prixMax) ? 1 : 0} />
 
           {(marquesActives.length > 0 || categoriesActives.length > 0 || taillesActives.length > 0 || prixMin || prixMax) && (
             <button
@@ -199,8 +201,20 @@ function BoutiqueContenu() {
         </div>
       </div>
 
-      {filtreOuvert && (
-        <div className="fixed inset-0 z-40 md:hidden" onClick={() => setFiltreOuvert(null)} />
+      {/* Dropdown en position fixe — en dehors du scroll */}
+      {filtreOuvert && contenuDropdown[filtreOuvert] && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setFiltreOuvert(null)}
+          />
+          <div
+            className="bg-[#F5F0E8] border border-[#E8DFD0] rounded-2xl p-4 shadow-lg min-w-48 max-h-64 overflow-y-auto"
+            style={{position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999}}
+          >
+            {contenuDropdown[filtreOuvert]}
+          </div>
+        </>
       )}
 
       <div className="flex gap-8">
