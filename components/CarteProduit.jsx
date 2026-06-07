@@ -9,9 +9,13 @@ export default function CarteProduit({ produit, nouveau = false }) {
   const favori = estFavori(produit.id)
   const photoUrl = produit.photos ? produit.photos.split(',')[0] : null
 
+  const sauvegarderPosition = () => {
+    sessionStorage.setItem('boutique_scroll', window.scrollY)
+  }
+
   return (
     <div className="group">
-      <Link href={`/produits/${produit.slug}`}>
+      <Link href={`/produits/${produit.slug}`} onClick={sauvegarderPosition}>
         <div className="relative rounded-2xl overflow-hidden mb-4 bg-[#E8DFD0] aspect-[3/4]">
           {photoUrl ? (
             <img src={photoUrl} alt="" className="w-full h-full object-cover" />

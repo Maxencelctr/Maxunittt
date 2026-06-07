@@ -58,6 +58,16 @@ function BoutiqueContenu() {
     chargerDonnees()
   }, [])
 
+  useEffect(() => {
+    const scroll = sessionStorage.getItem('boutique_scroll')
+    if (scroll) {
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(scroll))
+        sessionStorage.removeItem('boutique_scroll')
+      }, 300)
+    }
+  }, [produits])
+
   const toggleFiltre = (valeur, liste, setListe) => {
     if (liste.includes(valeur)) {
       setListe(liste.filter(v => v !== valeur))
@@ -76,7 +86,7 @@ function BoutiqueContenu() {
     return true
   })
 
-  const FiltreBtn = ({ label, actifs, children }) => {
+  const FiltreBtn = ({ label, actifs }) => {
     const btnRef = useRef(null)
 
     const handleClick = () => {
@@ -182,7 +192,6 @@ function BoutiqueContenu() {
         {recherche && <button onClick={() => setRecherche('')}><X size={14} className="text-[#8C7B6B]" /></button>}
       </div>
 
-      {/* Filtres mobile style Vinted */}
       <div className="md:hidden mb-4" style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
         <div style={{display: 'flex', gap: '8px', width: 'max-content', paddingBottom: '8px'}}>
           <FiltreBtn label="Marque" actifs={marquesActives.length} />
@@ -201,13 +210,9 @@ function BoutiqueContenu() {
         </div>
       </div>
 
-      {/* Dropdown en position fixe — en dehors du scroll */}
       {filtreOuvert && contenuDropdown[filtreOuvert] && (
         <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setFiltreOuvert(null)}
-          />
+          <div className="fixed inset-0 z-40" onClick={() => setFiltreOuvert(null)} />
           <div
             className="bg-[#F5F0E8] border border-[#E8DFD0] rounded-2xl p-4 shadow-lg min-w-48 max-h-64 overflow-y-auto"
             style={{position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, zIndex: 9999}}
