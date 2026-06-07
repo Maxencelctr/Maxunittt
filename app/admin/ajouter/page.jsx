@@ -47,13 +47,31 @@ export default function AjouterProduit() {
     chargerDonnees()
   }, [])
 
-  const handleChange = (e) => {
+  const genererSlugUnique = async (nom) => {
+    const slugBase = nom.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '')
+    let slug = slugBase
+    let compteur = 1
+    while (true) {
+      const { data } = await supabase
+        .from('produits')
+        .select('id')
+        .eq('slug', slug)
+        .single()
+      if (!data) break
+      slug = `${slugBase}-${compteur}`
+      compteur++
+    }
+    return slug
+  }
+
+  const handleChange = async (e) => {
     const { name, value } = e.target
-    setForm(prev => ({
-      ...prev,
-      [name]: value,
-      ...(name === 'nom' ? { slug: value.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '') } : {})
-    }))
+    if (name === 'nom') {
+      const slug = await genererSlugUnique(value)
+      setForm(prev => ({ ...prev, nom: value, slug }))
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }))
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -198,7 +216,7 @@ export default function AjouterProduit() {
         <div>
           <label className="text-xs font-semibold text-[#8C7B6B] tracking-widest">SLUG (URL)</label>
           <input name="slug" value={form.slug} onChange={handleChange} className="w-full border border-[#E8DFD0] rounded-xl px-4 py-3 text-sm text-[#3D2B1F] bg-transparent mt-1 outline-none focus:border-[#3D2B1F]" />
-          <p className="text-xs text-[#8C7B6B] mt-1">Généré automatiquement depuis le nom</p>
+          <p className="text-xs text-[#8C7B6B] mt-1">Généré automatiquement — unique garanti</p>
         </div>
 
         <ZonePhoto
