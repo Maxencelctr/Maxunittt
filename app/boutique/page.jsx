@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Search, X, ChevronDown } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import CarteProduit from '@/components/CarteProduit'
@@ -8,7 +8,7 @@ import { useSearchParams } from 'next/navigation'
 
 const tailles = ["XS", "S", "M", "L", "XL", "XXL"]
 
-export default function Boutique() {
+function BoutiqueContenu() {
   const [produits, setProduits] = useState([])
   const [marques, setMarques] = useState([])
   const [categories, setCategories] = useState([])
@@ -191,9 +191,8 @@ export default function Boutique() {
       )}
 
       <div className="flex gap-8">
-
         <div className="hidden md:block w-52 shrink-0">
-          <p className="text-xs font-semibold tracking-widest text-[#8C7B6B] mb-4">FILTRES</p>
+          <p className="text-xs font-semibold tracking-widests text-[#8C7B6B] mb-4">FILTRES</p>
           {panneauFiltresDesktop}
         </div>
 
@@ -207,8 +206,15 @@ export default function Boutique() {
             <p className="text-center text-[#8C7B6B] py-20">Aucun produit ne correspond à ta recherche.</p>
           )}
         </div>
-
       </div>
     </div>
+  )
+}
+
+export default function Boutique() {
+  return (
+    <Suspense fallback={<div className="px-8 py-10 text-[#8C7B6B]">Chargement...</div>}>
+      <BoutiqueContenu />
+    </Suspense>
   )
 }
