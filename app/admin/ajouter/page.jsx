@@ -16,6 +16,7 @@ export default function AjouterProduit() {
   const [couleurs, setCouleurs] = useState([])
   const [marques, setMarques] = useState([])
   const [categories, setCategories] = useState([])
+  const [slugDisponible, setSlugDisponible] = useState(true)
   const [form, setForm] = useState({
     nom: '',
     marque: '',
@@ -47,8 +48,8 @@ export default function AjouterProduit() {
     chargerDonnees()
   }, [])
 
-  const genererSlugUnique = async (nom) => {
-    const slugBase = nom.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '')
+  const genererSlugUnique = async (texte) => {
+    const slugBase = texte.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '')
     let slug = slugBase
     let compteur = 1
     while (true) {
@@ -64,14 +65,35 @@ export default function AjouterProduit() {
     return slug
   }
 
+  const verifierSlug = async (slug) => {
+    const slugNettoye = slug.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '')
+    const { data } = await supabase
+      .from('produits')
+      .select('id')
+      .eq('slug', slugNettoye)
+      .single()
+    setSlugDisponible(!data)
+    return !data
+  }
+
   const handleChange = async (e) => {
     const { name, value } = e.target
     if (name === 'nom') {
       const slug = await genererSlugUnique(value)
+      setSlugDisponible(true)
       setForm(prev => ({ ...prev, nom: value, slug }))
+    } else if (name === 'slug') {
+      setForm(prev => ({ ...prev, slug: value }))
+      await verifierSlug(value)
     } else {
       setForm(prev => ({ ...prev, [name]: value }))
     }
+  }
+
+  const corrigerSlug = async () => {
+    const slugUnique = await genererSlugUnique(form.slug || form.nom)
+    setForm(prev => ({ ...prev, slug: slugUnique }))
+    setSlugDisponible(true)
   }
 
   const handleSubmit = async (e) => {
@@ -79,10 +101,12 @@ export default function AjouterProduit() {
     setChargement(true)
     setErreur('')
 
+    const slugFinal = await genererSlugUnique(form.slug || form.nom)
     const photosUrl = photos.filter(p => p !== '').join(',')
 
     const { error } = await supabase.from('produits').insert([{
       ...form,
+      slug: slugFinal,
       prix: parseFloat(form.prix),
       quantite: parseInt(form.quantite),
       photos: photosUrl,
@@ -215,8 +239,26 @@ export default function AjouterProduit() {
 
         <div>
           <label className="text-xs font-semibold text-[#8C7B6B] tracking-widest">SLUG (URL)</label>
-          <input name="slug" value={form.slug} onChange={handleChange} className="w-full border border-[#E8DFD0] rounded-xl px-4 py-3 text-sm text-[#3D2B1F] bg-transparent mt-1 outline-none focus:border-[#3D2B1F]" />
-          <p className="text-xs text-[#8C7B6B] mt-1">Généré automatiquement — unique garanti</p>
+          <input
+            name="slug"
+            value={form.slug}
+            onChange={handleChange}
+            className={`w-full border rounded-xl px-4 py-3 text-sm text-[#3D2B1F] bg-transparent mt-1 outline-none ${slugDisponible ? 'border-[#E8DFD0] focus:border-[#3D2B1F]' : 'border-red-400 focus:border-red-400'}`}
+          />
+          {slugDisponible ? (
+            <p className="text-xs text-green-600 mt-1">✓ Slug disponible</p>
+          ) : (
+            <div className="flex items-center gap-3 mt-1">
+              <p className="text-xs text-red-500">✗ Slug déjà utilisé</p>
+              <button
+                type="button"
+                onClick={corrigerSlug}
+                className="text-xs text-[#4A6FA5] underline hover:opacity-60"
+              >
+                Corriger automatiquement
+              </button>
+            </div>
+          )}
         </div>
 
         <ZonePhoto
