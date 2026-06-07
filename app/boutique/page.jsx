@@ -23,6 +23,20 @@ function BoutiqueContenu() {
 
   const searchParams = useSearchParams()
 
+  // Restaurer les filtres depuis sessionStorage
+  useEffect(() => {
+    const filtresSauvegardes = sessionStorage.getItem('boutique_filtres')
+    if (filtresSauvegardes) {
+      const f = JSON.parse(filtresSauvegardes)
+      if (f.recherche) setRecherche(f.recherche)
+      if (f.marquesActives?.length > 0) setMarquesActives(f.marquesActives)
+      if (f.categoriesActives?.length > 0) setCategoriesActives(f.categoriesActives)
+      if (f.taillesActives?.length > 0) setTaillesActives(f.taillesActives)
+      if (f.prixMin) setPrixMin(f.prixMin)
+      if (f.prixMax) setPrixMax(f.prixMax)
+    }
+  }, [])
+
   useEffect(() => {
     const rechercheUrl = searchParams.get('recherche')
     if (rechercheUrl) setRecherche(rechercheUrl)
@@ -58,6 +72,7 @@ function BoutiqueContenu() {
     chargerDonnees()
   }, [])
 
+  // Restaurer la position du scroll
   useEffect(() => {
     const scroll = sessionStorage.getItem('boutique_scroll')
     if (scroll) {
@@ -67,6 +82,18 @@ function BoutiqueContenu() {
       }, 300)
     }
   }, [produits])
+
+  // Sauvegarder les filtres à chaque changement
+  useEffect(() => {
+    sessionStorage.setItem('boutique_filtres', JSON.stringify({
+      recherche,
+      marquesActives,
+      categoriesActives,
+      taillesActives,
+      prixMin,
+      prixMax
+    }))
+  }, [recherche, marquesActives, categoriesActives, taillesActives, prixMin, prixMax])
 
   const toggleFiltre = (valeur, liste, setListe) => {
     if (liste.includes(valeur)) {
@@ -192,6 +219,7 @@ function BoutiqueContenu() {
         {recherche && <button onClick={() => setRecherche('')}><X size={14} className="text-[#8C7B6B]" /></button>}
       </div>
 
+      {/* Filtres mobile style Vinted */}
       <div className="md:hidden mb-4" style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
         <div style={{display: 'flex', gap: '8px', width: 'max-content', paddingBottom: '8px'}}>
           <FiltreBtn label="Marque" actifs={marquesActives.length} />
@@ -210,6 +238,7 @@ function BoutiqueContenu() {
         </div>
       </div>
 
+      {/* Dropdown en position fixe */}
       {filtreOuvert && contenuDropdown[filtreOuvert] && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setFiltreOuvert(null)} />
