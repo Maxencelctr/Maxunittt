@@ -76,7 +76,7 @@ function BoutiqueContenu() {
   })
 
   const FiltreBtn = ({ label, actifs, children }) => (
-    <div className="relative">
+    <div className="relative" style={{zIndex: filtreOuvert === label ? 50 : 'auto'}}>
       <button
         onClick={() => setFiltreOuvert(filtreOuvert === label ? null : label)}
         className={`flex items-center gap-1 px-3 py-2 rounded-full border text-xs whitespace-nowrap transition-colors ${actifs > 0 ? 'bg-[#3D2B1F] text-white border-[#3D2B1F]' : 'border-[#E8DFD0] text-[#3D2B1F]'}`}
@@ -85,7 +85,10 @@ function BoutiqueContenu() {
         <ChevronDown size={12} />
       </button>
       {filtreOuvert === label && (
-        <div className="absolute top-10 left-0 z-40 bg-[#F5F0E8] border border-[#E8DFD0] rounded-2xl p-4 shadow-lg min-w-48 max-h-64 overflow-y-auto">
+        <div
+          className="absolute top-10 left-0 bg-[#F5F0E8] border border-[#E8DFD0] rounded-2xl p-4 shadow-lg min-w-48 max-h-64 overflow-y-auto"
+          style={{zIndex: 9999}}
+        >
           {children}
         </div>
       )}
@@ -148,8 +151,12 @@ function BoutiqueContenu() {
         {recherche && <button onClick={() => setRecherche('')}><X size={14} className="text-[#8C7B6B]" /></button>}
       </div>
 
-      <div className="md:hidden overflow-x-auto pb-2 mb-4">
-        <div className="flex gap-2 w-max">
+      {/* Filtres mobile style Vinted */}
+      <div
+        className="md:hidden mb-4"
+        style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch', position: 'relative'}}
+      >
+        <div style={{display: 'flex', gap: '8px', width: 'max-content', paddingBottom: '8px'}}>
           <FiltreBtn label="Marque" actifs={marquesActives.length}>
             {contenuMarques}
           </FiltreBtn>
@@ -192,7 +199,7 @@ function BoutiqueContenu() {
 
       <div className="flex gap-8">
         <div className="hidden md:block w-52 shrink-0">
-          <p className="text-xs font-semibold tracking-widests text-[#8C7B6B] mb-4">FILTRES</p>
+          <p className="text-xs font-semibold tracking-widest text-[#8C7B6B] mb-4">FILTRES</p>
           {panneauFiltresDesktop}
         </div>
 
