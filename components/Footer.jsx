@@ -4,7 +4,6 @@ export default function Footer() {
   return (
     <footer className="bg-[#F5F0E8] px-8 py-10">
 
-      {/* Partie haute */}
       <div className="border-b border-[#D4C9B8] pb-8 mb-6 flex flex-col items-center text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-[#3D2B1F] whitespace-nowrap mb-6">
           Chaque pièce a une histoire. La tienne commence ici.
@@ -18,8 +17,6 @@ export default function Footer() {
           </Link>
         </div>
       </div>
-
-      {/* Partie basse */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <p className="text-sm font-semibold text-[#3D2B1F]">maxunittt</p>
         <div className="flex flex-wrap gap-4 md:gap-6">

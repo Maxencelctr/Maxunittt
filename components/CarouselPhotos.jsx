@@ -20,7 +20,6 @@ export default function CarouselPhotos({ photos }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Photo principale */}
       <div className="relative w-full rounded-2xl overflow-hidden bg-[#E8DFD0]">
         <img src={photos[photoActive]} alt="" className="w-full aspect-[3/4] object-cover rounded-2xl" />
         {photos.length > 1 && (
@@ -39,8 +38,6 @@ export default function CarouselPhotos({ photos }) {
           ))}
         </div>
       </div>
-
-      {/* Miniatures */}
       {photos.length > 1 && (
         <div className="flex gap-2">
           {photos.map((photo, index) => (

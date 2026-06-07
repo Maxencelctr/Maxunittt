@@ -39,15 +39,12 @@ export default async function FicheProduit({ params }) {
         ← Retour à la boutique
       </Link>
 
-      {/* Photo + Infos */}
       <div className="flex flex-col md:flex-row md:gap-12 md:justify-center">
 
-        {/* Photo */}
         <div className="w-full md:w-[35%] mb-6 md:mb-0">
           <CarouselPhotos photos={tabPhotos} />
         </div>
 
-        {/* Infos */}
         <div className="w-full md:w-[45%]">
 
           {produit.disponible === false && (
@@ -89,7 +86,6 @@ export default async function FicheProduit({ params }) {
         </div>
       </div>
 
-      {/* VOUS AIMEREZ AUSSI */}
       {produitsSimilaires && produitsSimilaires.length > 0 && (
         <section className="mt-12 md:mt-16">
           <h2 className="text-xl md:text-2xl font-bold text-[#3D2B1F] mb-6 md:mb-8">Vous aimerez aussi</h2>

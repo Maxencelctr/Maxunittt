@@ -40,7 +40,6 @@ export default function Home() {
   return (
     <div>
 
-      {/* HERO */}
       <section className="flex flex-col items-center justify-center text-center px-4 md:px-8 py-16 md:py-32">
         <p className="text-xs tracking-widest text-[#4A6FA5] mb-4 md:mb-6 font-semibold">
           SECONDE MAIN · MULTIMARQUE · CERTIFIÉ
@@ -64,7 +63,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* COUPS DE COEUR */}
       <section className="px-4 md:px-8 py-10 md:py-16">
         <div className="flex justify-between items-end mb-6 md:mb-10">
           <div>
@@ -86,8 +84,6 @@ export default function Home() {
           </div>
         )}
       </section>
-
-      {/* NOUVEAUTÉS */}
       <section className="px-4 md:px-8 py-10 md:py-16 bg-[#EDE8DE]">
         <div className="flex justify-between items-end mb-6 md:mb-10">
           <div>
@@ -109,8 +105,6 @@ export default function Home() {
           </div>
         )}
       </section>
-
-      {/* CATÉGORIES */}
       {/* CATÉGORIES */}
 {/* <section className="px-4 md:px-8 py-10 md:py-16 text-center">
   <p className="text-xs tracking-widest text-[#4A6FA5] font-semibold mb-2">PARCOURIR PAR</p>

@@ -97,7 +97,6 @@ export default function AdminCategories() {
       <h1 className="text-3xl font-bold text-[#3D2B1F] mb-2">Gestion des catégories</h1>
       <p className="text-sm text-[#8C7B6B] mb-8">{categories.length} catégorie{categories.length > 1 ? 's' : ''} au total</p>
 
-      {/* Ajouter une catégorie */}
       <form onSubmit={ajouterCategorie} className="flex gap-3 mb-6">
         <input
           type="text"
@@ -115,7 +114,6 @@ export default function AdminCategories() {
         </button>
       </form>
 
-      {/* Barre de recherche */}
       <div className="flex items-center gap-2 border border-[#E8DFD0] rounded-full px-4 py-2 mb-6">
         <Search size={16} className="text-[#8C7B6B]" />
         <input
@@ -127,12 +125,10 @@ export default function AdminCategories() {
         />
       </div>
 
-      {/* Liste des catégories */}
       <div className="grid grid-cols-3 gap-4">
         {categoriesFiltrees.map(cat => (
           <div key={cat.id} className="border border-[#E8DFD0] rounded-2xl overflow-hidden">
-            
-            {/* Zone photo */}
+   
             <div className="relative h-32 bg-[#E8DFD0]">
               {cat.photo ? (
                 <img src={cat.photo} alt={cat.nom} className="w-full h-full object-cover" />
@@ -153,8 +149,7 @@ export default function AdminCategories() {
                 </div>
               )}
             </div>
-
-            {/* Infos */}
+}
             <div className="flex items-center justify-between px-3 py-2">
               <div>
                 <p className="text-sm font-semibold text-[#3D2B1F]">{cat.nom}</p>

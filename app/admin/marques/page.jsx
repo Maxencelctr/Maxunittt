@@ -111,7 +111,6 @@ export default function AdminMarques() {
         {nbFiltres} marque{nbFiltres > 1 ? 's' : ''} affichée{nbFiltres > 1 ? 's' : ''} dans les filtres · {marques.length} au total
       </p>
 
-      {/* Ajouter une marque */}
       <form onSubmit={ajouterMarque} className="flex gap-3 mb-6">
         <input
           type="text"
@@ -125,7 +124,6 @@ export default function AdminMarques() {
         </button>
       </form>
 
-      {/* Barre de recherche */}
       <div className="flex items-center gap-2 border border-[#E8DFD0] rounded-full px-4 py-2 mb-6">
         <Search size={16} className="text-[#8C7B6B]" />
         <input
@@ -137,7 +135,6 @@ export default function AdminMarques() {
         />
       </div>
 
-      {/* Grille 3 colonnes */}
       <div className="grid grid-cols-3 gap-3">
         {marquesFiltrees.map(marque => (
           <div

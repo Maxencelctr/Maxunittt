@@ -142,14 +142,12 @@ export default function Boutique() {
       <h1 className="text-3xl md:text-4xl font-bold text-[#3D2B1F] mb-1">Boutique</h1>
       <p className="text-sm text-[#8C7B6B] mb-4">{produitsFiltres.length} articles disponibles</p>
 
-      {/* Barre recherche */}
       <div className="flex items-center gap-2 border border-[#E8DFD0] rounded-full px-4 py-2 mb-3">
         <Search size={16} className="text-[#8C7B6B]" />
         <input type="text" placeholder="Rechercher..." value={recherche} onChange={e => setRecherche(e.target.value)} className="flex-1 text-sm text-[#3D2B1F] bg-transparent outline-none" />
         {recherche && <button onClick={() => setRecherche('')}><X size={14} className="text-[#8C7B6B]" /></button>}
       </div>
 
-      {/* Filtres mobile style Vinted */}
       <div className="md:hidden overflow-x-auto pb-2 mb-4">
         <div className="flex gap-2 w-max">
           <FiltreBtn label="Marque" actifs={marquesActives.length}>
@@ -194,13 +192,11 @@ export default function Boutique() {
 
       <div className="flex gap-8">
 
-        {/* Filtres desktop */}
         <div className="hidden md:block w-52 shrink-0">
           <p className="text-xs font-semibold tracking-widest text-[#8C7B6B] mb-4">FILTRES</p>
           {panneauFiltresDesktop}
         </div>
 
-        {/* Produits */}
         <div className="flex-1">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
             {produitsFiltres.map(produit => (

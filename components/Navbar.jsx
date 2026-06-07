@@ -26,12 +26,10 @@ export default function Navbar() {
     <>
       <nav className="flex items-center justify-between px-4 md:px-8 py-4 md:py-5 bg-[#F5F0E8] border-b border-[#E8DFD0]">
 
-        {/* Logo */}
         <div className={rechercheOuverte ? 'hidden md:block' : ''}>
           <Image src="/maxunitt-texte.png" alt="maxunittt" height={28} width={90} />
         </div>
 
-        {/* Barre recherche — visible partout quand ouverte */}
         {rechercheOuverte ? (
           <form onSubmit={handleRecherche} className="flex flex-1 mx-2 md:mx-8 items-center gap-2 border border-[#E8DFD0] rounded-full px-4 py-2">
             <Search size={16} className="text-[#8C7B6B]" />
@@ -55,7 +53,6 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Icônes droite */}
         <div className="flex items-center gap-3 md:gap-4">
           <button onClick={() => { setRechercheOuverte(!rechercheOuverte); setMenuOuvert(false) }} className="text-[#3D2B1F] hover:opacity-60 transition-opacity">
             {rechercheOuverte ? <X size={20} /> : <Search size={20} />}
@@ -77,7 +74,6 @@ export default function Navbar() {
 
       </nav>
 
-      {/* Menu mobile */}
       {menuOuvert && !rechercheOuverte && (
         <div className="md:hidden bg-[#F5F0E8] border-b border-[#E8DFD0] px-4 py-6 flex flex-col gap-5">
           <Link href="/" onClick={() => setMenuOuvert(false)} className="text-base text-[#3D2B1F] font-medium">Accueil</Link>
