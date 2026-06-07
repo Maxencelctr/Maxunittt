@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useRef } from 'react'
 import { Search, X, ChevronDown } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import CarteProduit from '@/components/CarteProduit'
@@ -75,25 +75,34 @@ function BoutiqueContenu() {
     return true
   })
 
-  const FiltreBtn = ({ label, actifs, children }) => (
-    <div className="relative" style={{zIndex: filtreOuvert === label ? 50 : 'auto'}}>
-      <button
-        onClick={() => setFiltreOuvert(filtreOuvert === label ? null : label)}
-        className={`flex items-center gap-1 px-3 py-2 rounded-full border text-xs whitespace-nowrap transition-colors ${actifs > 0 ? 'bg-[#3D2B1F] text-white border-[#3D2B1F]' : 'border-[#E8DFD0] text-[#3D2B1F]'}`}
-      >
-        {label} {actifs > 0 && `(${actifs})`}
-        <ChevronDown size={12} />
-      </button>
-      {filtreOuvert === label && (
-        <div
-          className="absolute top-10 left-0 bg-[#F5F0E8] border border-[#E8DFD0] rounded-2xl p-4 shadow-lg min-w-48 max-h-64 overflow-y-auto"
-          style={{zIndex: 9999}}
+  const FiltreBtn = ({ label, actifs, children }) => {
+    const btnRef = useRef(null)
+
+    const handleClick = () => {
+      setFiltreOuvert(filtreOuvert === label ? null : label)
+    }
+
+    return (
+      <div style={{position: 'relative'}}>
+        <button
+          ref={btnRef}
+          onClick={handleClick}
+          className={`flex items-center gap-1 px-3 py-2 rounded-full border text-xs whitespace-nowrap transition-colors ${actifs > 0 ? 'bg-[#3D2B1F] text-white border-[#3D2B1F]' : 'border-[#E8DFD0] text-[#3D2B1F]'}`}
         >
-          {children}
-        </div>
-      )}
-    </div>
-  )
+          {label} {actifs > 0 && `(${actifs})`}
+          <ChevronDown size={12} />
+        </button>
+        {filtreOuvert === label && (
+          <div
+            className="bg-[#F5F0E8] border border-[#E8DFD0] rounded-2xl p-4 shadow-lg min-w-48 max-h-64 overflow-y-auto"
+            style={{position: 'fixed', top: btnRef.current ? btnRef.current.getBoundingClientRect().bottom + 4 : 0, left: btnRef.current ? btnRef.current.getBoundingClientRect().left : 0, zIndex: 9999}}
+          >
+            {children}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   const contenuMarques = marques.map(m => (
     <label key={m.id} className="flex items-center gap-2 text-sm text-[#3D2B1F] mb-2 cursor-pointer">
@@ -152,10 +161,7 @@ function BoutiqueContenu() {
       </div>
 
       {/* Filtres mobile style Vinted */}
-      <div
-        className="md:hidden mb-4"
-        style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch', position: 'relative'}}
-      >
+      <div className="md:hidden mb-4" style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
         <div style={{display: 'flex', gap: '8px', width: 'max-content', paddingBottom: '8px'}}>
           <FiltreBtn label="Marque" actifs={marquesActives.length}>
             {contenuMarques}
@@ -194,7 +200,7 @@ function BoutiqueContenu() {
       </div>
 
       {filtreOuvert && (
-        <div className="fixed inset-0 z-30 md:hidden" onClick={() => setFiltreOuvert(null)} />
+        <div className="fixed inset-0 z-40 md:hidden" onClick={() => setFiltreOuvert(null)} />
       )}
 
       <div className="flex gap-8">
