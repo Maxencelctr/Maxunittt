@@ -128,7 +128,7 @@ export default function AdminCategories() {
       <div className="grid grid-cols-3 gap-4">
         {categoriesFiltrees.map(cat => (
           <div key={cat.id} className="border border-[#E8DFD0] rounded-2xl overflow-hidden">
-   
+
             <div className="relative h-32 bg-[#E8DFD0]">
               {cat.photo ? (
                 <img src={cat.photo} alt={cat.nom} className="w-full h-full object-cover" />
@@ -149,7 +149,7 @@ export default function AdminCategories() {
                 </div>
               )}
             </div>
-}
+
             <div className="flex items-center justify-between px-3 py-2">
               <div>
                 <p className="text-sm font-semibold text-[#3D2B1F]">{cat.nom}</p>
