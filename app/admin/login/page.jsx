@@ -22,11 +22,13 @@ export default function AdminLogin() {
     })
 
     if (error) {
-      setErreur('Email ou mot de passe incorrect.')
-      setChargement(false)
-    } else {
-      router.push('/admin')
-    }
+  setErreur('Email ou mot de passe incorrect.')
+  setChargement(false)
+} else {
+  setTimeout(() => {
+    router.push('/admin')
+  }, 500)
+}
   }
 
   return (
