@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 export default function AdminLogin() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [erreur, setErreur] = useState('')
@@ -22,13 +20,13 @@ export default function AdminLogin() {
     })
 
     if (error) {
-  setErreur('Email ou mot de passe incorrect.')
-  setChargement(false)
-} else {
-  setTimeout(() => {
-    router.push('/admin')
-  }, 500)
-}
+      setErreur('Email ou mot de passe incorrect.')
+      setChargement(false)
+    } else {
+      setTimeout(() => {
+        window.location.href = '/admin'
+      }, 800)
+    }
   }
 
   return (
