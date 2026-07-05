@@ -17,6 +17,8 @@ export default function AjouterProduit() {
   const [marques, setMarques] = useState([])
   const [categories, setCategories] = useState([])
   const [slugDisponible, setSlugDisponible] = useState(true)
+  const [nouvelleMarque, setNouvelleMarque] = useState('')
+  const [nouvelleCategorie, setNouvelleCategorie] = useState('')
   const [form, setForm] = useState({
     nom: '',
     marque: '',
@@ -96,6 +98,45 @@ export default function AjouterProduit() {
     setSlugDisponible(true)
   }
 
+  const creerMarque = async () => {
+    const nom = nouvelleMarque.trim()
+    if (nom.length < 2) return
+
+    const existe = marques.find(m => m.nom.toLowerCase() === nom.toLowerCase())
+    if (!existe) {
+      const { error } = await supabase.from('marques').insert([{ nom, afficher_filtre: false }])
+      if (error) {
+        alert('Erreur création marque : ' + error.message)
+        return
+      }
+      const { data } = await supabase.from('marques').select('*').order('nom')
+      setMarques(data || [])
+    }
+
+    setForm(prev => ({ ...prev, marque: nom }))
+    setNouvelleMarque('')
+  }
+
+  const creerCategorie = async () => {
+    const nom = nouvelleCategorie.trim()
+    if (nom.length < 2) return
+    const slug = nom.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '')
+
+    const existe = categories.find(c => c.slug === slug)
+    if (!existe) {
+      const { error } = await supabase.from('categories').insert([{ nom, slug }])
+      if (error) {
+        alert('Erreur création catégorie : ' + error.message)
+        return
+      }
+      const { data } = await supabase.from('categories').select('*').order('nom')
+      setCategories(data || [])
+    }
+
+    setForm(prev => ({ ...prev, categorie: slug }))
+    setNouvelleCategorie('')
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setChargement(true)
@@ -147,23 +188,22 @@ export default function AjouterProduit() {
               <option value="__nouvelle__">+ Nouvelle marque...</option>
             </select>
             {form.marque === '__nouvelle__' && (
-              <input
-                type="text"
-                placeholder="Nom de la nouvelle marque"
-                onChange={async e => {
-                  const nom = e.target.value
-                  setForm(prev => ({ ...prev, marque: nom }))
-                  if (nom.length > 2) {
-                    const existe = marques.find(m => m.nom.toLowerCase() === nom.toLowerCase())
-                    if (!existe) {
-                      await supabase.from('marques').insert([{ nom, afficher_filtre: false }])
-                      const { data } = await supabase.from('marques').select('*').order('nom')
-                      setMarques(data || [])
-                    }
-                  }
-                }}
-                className="w-full border border-[#4A6FA5] rounded-xl px-4 py-3 text-sm text-[#3D2B1F] bg-transparent mt-2 outline-none"
-              />
+              <div className="flex gap-2 mt-2">
+                <input
+                  type="text"
+                  value={nouvelleMarque}
+                  placeholder="Nom de la nouvelle marque"
+                  onChange={e => setNouvelleMarque(e.target.value)}
+                  className="w-full border border-[#4A6FA5] rounded-xl px-4 py-3 text-sm text-[#3D2B1F] bg-transparent outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={creerMarque}
+                  className="bg-[#4A6FA5] text-white px-4 rounded-xl text-sm whitespace-nowrap hover:opacity-80 transition-opacity"
+                >
+                  Créer
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -190,24 +230,22 @@ export default function AjouterProduit() {
               <option value="__nouvelle__">+ Nouvelle catégorie...</option>
             </select>
             {form.categorie === '__nouvelle__' && (
-              <input
-                type="text"
-                placeholder="Nom de la nouvelle catégorie"
-                onChange={async e => {
-                  const nom = e.target.value
-                  const slug = nom.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '')
-                  setForm(prev => ({ ...prev, categorie: slug }))
-                  if (nom.length > 2) {
-                    const existe = categories.find(c => c.slug === slug)
-                    if (!existe) {
-                      await supabase.from('categories').insert([{ nom, slug }])
-                      const { data } = await supabase.from('categories').select('*').order('nom')
-                      setCategories(data || [])
-                    }
-                  }
-                }}
-                className="w-full border border-[#4A6FA5] rounded-xl px-4 py-3 text-sm text-[#3D2B1F] bg-transparent mt-2 outline-none"
-              />
+              <div className="flex gap-2 mt-2">
+                <input
+                  type="text"
+                  value={nouvelleCategorie}
+                  placeholder="Nom de la nouvelle catégorie"
+                  onChange={e => setNouvelleCategorie(e.target.value)}
+                  className="w-full border border-[#4A6FA5] rounded-xl px-4 py-3 text-sm text-[#3D2B1F] bg-transparent outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={creerCategorie}
+                  className="bg-[#4A6FA5] text-white px-4 rounded-xl text-sm whitespace-nowrap hover:opacity-80 transition-opacity"
+                >
+                  Créer
+                </button>
+              </div>
             )}
           </div>
           <div>

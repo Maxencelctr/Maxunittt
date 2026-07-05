@@ -50,6 +50,7 @@ export default function Navbar() {
             <Link href="/" className="text-sm text-[#3D2B1F] hover:opacity-60 transition-opacity">Accueil</Link>
             <Link href="/boutique" className="text-sm text-[#3D2B1F] hover:opacity-60 transition-opacity">Boutique</Link>
             <Link href="/nouveautes" className="text-sm text-[#3D2B1F] hover:opacity-60 transition-opacity">Nouveautés</Link>
+            <Link href="/mon-histoire" className="text-sm text-[#3D2B1F] hover:opacity-60 transition-opacity">Mon Histoire</Link>
           </div>
         )}
 
@@ -79,6 +80,7 @@ export default function Navbar() {
           <Link href="/" onClick={() => setMenuOuvert(false)} className="text-base text-[#3D2B1F] font-medium">Accueil</Link>
           <Link href="/boutique" onClick={() => setMenuOuvert(false)} className="text-base text-[#3D2B1F] font-medium">Boutique</Link>
           <Link href="/nouveautes" onClick={() => setMenuOuvert(false)} className="text-base text-[#3D2B1F] font-medium">Nouveautés</Link>
+          <Link href="/mon-histoire" onClick={() => setMenuOuvert(false)} className="text-base text-[#3D2B1F] font-medium">Mon Histoire</Link>
           <Link href="/favoris" onClick={() => setMenuOuvert(false)} className="text-base text-[#3D2B1F] font-medium">Favoris</Link>
           <Link href="/contact" onClick={() => setMenuOuvert(false)} className="bg-[#3D2B1F] text-[#F5F0E8] text-sm px-5 py-3 rounded-full text-center">
             Contact

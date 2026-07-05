@@ -22,6 +22,7 @@ export default function Footer() {
           <Link href="/" className="text-xs text-[#8C7B6B] hover:opacity-60 transition-opacity">Accueil</Link>
           <Link href="/boutique" className="text-xs text-[#8C7B6B] hover:opacity-60 transition-opacity">Boutique</Link>
           <Link href="/nouveautes" className="text-xs text-[#8C7B6B] hover:opacity-60 transition-opacity">Nouveautés</Link>
+          <Link href="/mon-histoire" className="text-xs text-[#8C7B6B] hover:opacity-60 transition-opacity">Mon Histoire</Link>
           <Link href="/favoris" className="text-xs text-[#8C7B6B] hover:opacity-60 transition-opacity">Favoris</Link>
           <Link href="/contact" className="text-xs text-[#8C7B6B] hover:opacity-60 transition-opacity">Contact</Link>
           <a href="https://www.instagram.com/max.unittt/" className="text-xs text-[#8C7B6B] hover:opacity-60 transition-opacity">Instagram</a>

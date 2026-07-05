@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { Search } from 'lucide-react'
+import { Search, Pencil, Trash2, Check, X } from 'lucide-react'
 
 export default function AdminMarques() {
   const router = useRouter()
@@ -13,6 +13,8 @@ export default function AdminMarques() {
   const [chargement, setChargement] = useState(true)
   const [sauvegarde, setSauvegarde] = useState(false)
   const [recherche, setRecherche] = useState('')
+  const [editId, setEditId] = useState(null)
+  const [editNom, setEditNom] = useState('')
 
   useEffect(() => {
     const verifierSession = async () => {
@@ -62,6 +64,53 @@ export default function AdminMarques() {
       afficher_filtre: false
     }])
     setNouvelleMarque('')
+    chargerDonnees()
+  }
+
+  const renommerMarque = async (marque) => {
+    const nouveauNom = editNom.trim()
+    if (!nouveauNom || nouveauNom === marque.nom) {
+      setEditId(null)
+      return
+    }
+
+    const doublon = marques.find(m => m.id !== marque.id && m.nom.toLowerCase() === nouveauNom.toLowerCase())
+    if (doublon) {
+      alert('Cette marque existe déjà.')
+      return
+    }
+
+    const { error } = await supabase.from('marques').update({ nom: nouveauNom }).eq('id', marque.id)
+    if (error) {
+      alert('Erreur : ' + error.message)
+      return
+    }
+
+    await supabase.from('produits').update({ marque: nouveauNom }).eq('marque', marque.nom)
+
+    setEditId(null)
+    setEditNom('')
+    chargerDonnees()
+  }
+
+  const supprimerMarque = async (marque) => {
+    const { count } = await supabase
+      .from('produits')
+      .select('id', { count: 'exact', head: true })
+      .eq('marque', marque.nom)
+
+    if (count > 0) {
+      alert(`Impossible de supprimer "${marque.nom}" : ${count} produit${count > 1 ? 's' : ''} l'utilise${count > 1 ? 'nt' : ''}. Renomme-la ou modifie d'abord ces produits.`)
+      return
+    }
+
+    if (!confirm(`Supprimer la marque "${marque.nom}" ?`)) return
+
+    const { error } = await supabase.from('marques').delete().eq('id', marque.id)
+    if (error) {
+      alert('Erreur : ' + error.message)
+      return
+    }
     chargerDonnees()
   }
 
@@ -139,13 +188,53 @@ export default function AdminMarques() {
         {marquesFiltrees.map(marque => (
           <div
             key={marque.id}
-            onClick={() => toggleFiltre(marque.id)}
-            className={`flex items-center justify-between border rounded-xl px-4 py-3 cursor-pointer transition-colors ${marque.afficher_filtre ? 'border-[#3D2B1F] bg-[#F5F0E8]' : 'border-[#E8DFD0] hover:border-[#3D2B1F]'}`}
+            onClick={() => editId !== marque.id && toggleFiltre(marque.id)}
+            className={`flex items-center justify-between border rounded-xl px-4 py-3 transition-colors ${editId === marque.id ? 'border-[#4A6FA5]' : `cursor-pointer ${marque.afficher_filtre ? 'border-[#3D2B1F] bg-[#F5F0E8]' : 'border-[#E8DFD0] hover:border-[#3D2B1F]'}`}`}
           >
-            <p className="text-sm font-semibold text-[#3D2B1F] truncate">{marque.nom}</p>
-            <div className={`w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ml-2 ${marque.afficher_filtre ? 'bg-[#3D2B1F] border-[#3D2B1F]' : 'border-[#E8DFD0]'}`}>
-              {marque.afficher_filtre && <span className="text-white text-xs">✓</span>}
-            </div>
+            {editId === marque.id ? (
+              <div className="flex items-center gap-2 w-full" onClick={e => e.stopPropagation()}>
+                <input
+                  type="text"
+                  value={editNom}
+                  onChange={e => setEditNom(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') renommerMarque(marque)
+                    if (e.key === 'Escape') setEditId(null)
+                  }}
+                  autoFocus
+                  className="flex-1 min-w-0 text-sm text-[#3D2B1F] bg-transparent outline-none border-b border-[#4A6FA5]"
+                />
+                <button onClick={() => renommerMarque(marque)} className="text-green-600 hover:opacity-60 shrink-0" title="Valider">
+                  <Check size={16} />
+                </button>
+                <button onClick={() => setEditId(null)} className="text-[#8C7B6B] hover:opacity-60 shrink-0" title="Annuler">
+                  <X size={16} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm font-semibold text-[#3D2B1F] truncate">{marque.nom}</p>
+                <div className="flex items-center gap-2 ml-2 shrink-0">
+                  <button
+                    onClick={e => { e.stopPropagation(); setEditId(marque.id); setEditNom(marque.nom) }}
+                    className="text-[#8C7B6B] hover:text-[#4A6FA5] transition-colors"
+                    title="Renommer"
+                  >
+                    <Pencil size={14} />
+                  </button>
+                  <button
+                    onClick={e => { e.stopPropagation(); supprimerMarque(marque) }}
+                    className="text-[#8C7B6B] hover:text-red-500 transition-colors"
+                    title="Supprimer"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                  <div className={`w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${marque.afficher_filtre ? 'bg-[#3D2B1F] border-[#3D2B1F]' : 'border-[#E8DFD0]'}`}>
+                    {marque.afficher_filtre && <span className="text-white text-xs">✓</span>}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         ))}
 

@@ -73,7 +73,7 @@ export default function AdminDashboard() {
           <div key={produit.id} className="flex items-center justify-between bg-white border border-[#E8DFD0] rounded-2xl px-6 py-4">
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 rounded-xl bg-[#E8DFD0] overflow-hidden">
-                <img src={produit.photos || '/placeholder.jpg'} alt="" className="w-full h-full object-cover" />
+                <img src={produit.photos?.split(',')[0] || '/placeholder.jpg'} alt="" className="w-full h-full object-cover" />
               </div>
               <div>
                 <p className="text-xs text-[#4A6FA5] font-semibold tracking-widest">{produit.marque}</p>
