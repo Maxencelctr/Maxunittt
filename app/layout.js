@@ -12,6 +12,9 @@ export const metadata = {
   },
   description: "Sélection de pièces streetwear et vintage seconde main multimarques : Carhartt, Calvin Klein, Tommy Hilfiger, Ralph Lauren, Nike, Adidas et plus. Des pièces triées une par une.",
   keywords: ["maxunittt", "streetwear seconde main", "vintage", "friperie en ligne", "Carhartt", "Nike", "Tommy Hilfiger", "Ralph Lauren"],
+  verification: {
+    google: "pUPUx-WLMzFIa2egx3L6wO4zEYOBDT0XnyYwhn-wJ9M",
+  },
   openGraph: {
     type: "website",
     locale: "fr_FR",
