@@ -3,25 +3,58 @@ import BoutonFavori from '@/components/BoutonFavori'
 import { supabase } from '@/lib/supabase'
 import CarouselPhotos from '@/components/CarouselPhotos'
 import CarteProduit from '@/components/CarteProduit'
+import { SITE_URL, SITE_NAME, INSTAGRAM_HANDLE } from '@/lib/config-site'
 
-export default async function FicheProduit({ params }) {
-  const { slug } = await params
-
-  const { data: produit } = await supabase
+// Récupère le produit une seule fois, réutilisé par metadata + page
+async function getProduit(slug) {
+  const { data } = await supabase
     .from('produits')
     .select('*')
     .eq('slug', slug)
     .single()
+  return data
+}
 
-  const tabPhotos = produit?.photos ? produit.photos.split(',') : []
+// --- METADATA DYNAMIQUES (titre d'onglet + partages réseaux sociaux) ---
+export async function generateMetadata({ params }) {
+  const { slug } = await params
+  const produit = await getProduit(slug)
 
-  const { data: produitsSimilaires } = await supabase
-    .from('produits')
-    .select('*')
-    .eq('disponible', true)
-    .neq('categorie', '')
-    .neq('id', produit.id)
-    .limit(4)
+  if (!produit) {
+    return { title: 'Produit introuvable — Maxunittt' }
+  }
+
+  const titre = `${produit.nom} — ${produit.marque} | Maxunittt`
+  const description = produit.description
+    ? produit.description.slice(0, 155)
+    : `${produit.nom} de ${produit.marque}, taille ${produit.taille}, ${produit.etat}. Pièce seconde main sélectionnée par Maxunittt.`
+  const image = produit.photos ? produit.photos.split(',')[0] : `${SITE_URL}/og-default.jpg`
+  const url = `${SITE_URL}/produits/${produit.slug}`
+
+  return {
+    title: titre,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: titre,
+      description,
+      url,
+      type: 'website',
+      images: [{ url: image, width: 800, height: 1066, alt: produit.nom }],
+      siteName: SITE_NAME,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: titre,
+      description,
+      images: [image],
+    },
+  }
+}
+
+export default async function FicheProduit({ params }) {
+  const { slug } = await params
+  const produit = await getProduit(slug)
 
   if (!produit) {
     return (
@@ -32,8 +65,53 @@ export default async function FicheProduit({ params }) {
     )
   }
 
+  const tabPhotos = produit.photos ? produit.photos.split(',') : []
+
+  const { data: produitsSimilaires } = await supabase
+    .from('produits')
+    .select('*')
+    .eq('disponible', true)
+    .neq('categorie', '')
+    .neq('id', produit.id)
+    .limit(4)
+
+  // --- SCHEMA.ORG PRODUCT (rich snippet Google : prix + dispo) ---
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: produit.nom,
+    description: produit.description || `${produit.nom} de ${produit.marque}`,
+    image: tabPhotos,
+    sku: produit.slug,
+    brand: {
+      '@type': 'Brand',
+      name: produit.marque,
+    },
+    color: produit.couleur,
+    category: produit.categorie,
+    offers: {
+      '@type': 'Offer',
+      url: `${SITE_URL}/produits/${produit.slug}`,
+      priceCurrency: 'EUR',
+      price: produit.prix,
+      itemCondition: 'https://schema.org/UsedCondition',
+      availability: produit.disponible
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/SoldOut',
+      seller: {
+        '@type': 'Organization',
+        name: SITE_NAME,
+      },
+    },
+  }
+
   return (
     <div className="px-4 md:px-8 py-6 md:py-10">
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <Link href="/boutique" className="text-sm text-[#8C7B6B] hover:opacity-60 transition-opacity mb-6 md:mb-8 inline-block">
         ← Retour à la boutique
@@ -77,7 +155,12 @@ export default async function FicheProduit({ params }) {
           <p className="text-sm text-[#8C7B6B] mb-6 md:mb-8 leading-relaxed">{produit.description}</p>
 
           <div className="flex gap-3">
-            <a href="https://www.instagram.com/max.unittt/" target="_blank" className="flex-1 bg-[#3D2B1F] text-[#F5F0E8] py-3 rounded-full text-center text-sm hover:opacity-80 transition-opacity">
+            <a
+              href={`https://ig.me/m/${INSTAGRAM_HANDLE}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 bg-[#3D2B1F] text-[#F5F0E8] py-3 rounded-full text-center text-sm hover:opacity-80 transition-opacity"
+            >
               Contacter sur Instagram
             </a>
             <BoutonFavori produit={produit} />

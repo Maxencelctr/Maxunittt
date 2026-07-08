@@ -1,6 +1,12 @@
 import { Mail } from 'lucide-react'
 import Link from 'next/link'
 
+export const metadata = {
+  title: 'Contact — Maxunittt | Streetwear seconde main',
+  description: 'Une question sur une pièce, une taille, un envoi ? Contacte Maxunittt par Instagram ou email. Réponse rapide.',
+  alternates: { canonical: 'https://maxunittt.vercel.app/contact' },
+}
+
 export default function Contact() {
   return (
     <div className="px-4 md:px-8 py-10 md:py-20 flex flex-col items-center text-center">
